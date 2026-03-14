@@ -2,6 +2,10 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import {
+  getSupabaseConfigMessage,
+  hasPublicSupabaseEnv,
+} from "../../lib/supabase/env";
 import { createClient } from "../../lib/supabase/server";
 
 function getField(formData, key) {
@@ -9,6 +13,10 @@ function getField(formData, key) {
 }
 
 export async function signInAction(formData) {
+  if (!hasPublicSupabaseEnv()) {
+    redirect(`/login?message=${encodeURIComponent(getSupabaseConfigMessage())}`);
+  }
+
   const email = getField(formData, "email");
   const password = getField(formData, "password");
   const supabase = await createClient();
@@ -25,6 +33,10 @@ export async function signInAction(formData) {
 }
 
 export async function signUpAction(formData) {
+  if (!hasPublicSupabaseEnv()) {
+    redirect(`/login?message=${encodeURIComponent(getSupabaseConfigMessage())}`);
+  }
+
   const email = getField(formData, "email");
   const password = getField(formData, "password");
   const headerStore = await headers();

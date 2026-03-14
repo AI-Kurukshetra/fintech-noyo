@@ -1,7 +1,19 @@
 # Supabase Setup
 
-The app now includes local Supabase environment variables in `.env.local` and
+The app includes local Supabase environment variables in `.env.local` and
 server-side integration for auth plus database-backed reads.
+
+## Environment variables
+
+For local development, set these in `.env.local`:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+For Vercel, add the same names in Project Settings -> Environment Variables.
+The server code also accepts legacy `SUPABASE_URL` and `SUPABASE_ANON_KEY`
+values, but the `NEXT_PUBLIC_*` names are the recommended deployment setup.
 
 ## Apply the database
 
@@ -17,6 +29,11 @@ For local email confirmation flows, set these in Supabase Auth settings:
 
 - Site URL: `http://localhost:3000`
 - Redirect URL: `http://localhost:3000/auth/callback`
+
+For Vercel deployments, also add:
+
+- Site URL: `https://your-project.vercel.app`
+- Redirect URL: `https://your-project.vercel.app/auth/callback`
 
 If email confirmation is enabled, new users must confirm their email before
 they can sign in.

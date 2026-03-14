@@ -1,4 +1,8 @@
 import { redirect } from "next/navigation";
+import {
+  getSupabaseConfigMessage,
+  hasPublicSupabaseEnv,
+} from "../lib/supabase/env";
 import { createClient } from "../lib/supabase/server";
 import Sidebar from "./sidebar";
 
@@ -9,6 +13,30 @@ export default async function AppShell({
   children,
   protectedView = true,
 }) {
+  if (!hasPublicSupabaseEnv()) {
+    if (protectedView) {
+      redirect(`/login?message=${encodeURIComponent(getSupabaseConfigMessage())}`);
+    }
+
+    return (
+      <div className="layout-frame">
+        <Sidebar userEmail={null} />
+        <main className="main-column">
+          <header className="page-header">
+            <div>
+              <span className="eyebrow">{eyebrow}</span>
+              <h1>{title}</h1>
+            </div>
+            <div className="header-side">
+              <p>{description}</p>
+            </div>
+          </header>
+          <div className="page-content">{children}</div>
+        </main>
+      </div>
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

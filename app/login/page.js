@@ -1,4 +1,8 @@
 import { redirect } from "next/navigation";
+import {
+  getSupabaseConfigMessage,
+  hasPublicSupabaseEnv,
+} from "../../lib/supabase/env";
 import { createClient } from "../../lib/supabase/server";
 import { signInAction, signUpAction } from "./actions";
 
@@ -8,14 +12,18 @@ export const metadata = {
 
 export default async function LoginPage({ searchParams }) {
   const params = await searchParams;
-  const message = params?.message;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const configMessage = hasPublicSupabaseEnv() ? null : getSupabaseConfigMessage();
+  const message = params?.message || configMessage;
 
-  if (user) {
-    redirect("/dashboard");
+  if (hasPublicSupabaseEnv()) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      redirect("/dashboard");
+    }
   }
 
   return (
